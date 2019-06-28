@@ -1,0 +1,38 @@
+{
+  "name": "team23/setup-module",
+  "description": "Setup Module for Magento 2 by Team23",
+  "homepage": "https://www.team23.de/",
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Alexander Hälbich",
+      "email": "haelbich@team23.de"
+    },
+    {
+      "name": "Emanuel Jacob",
+      "email": "jacob@team23.de"
+    }
+  ],
+  "keywords": [
+    "Magento 2",
+    "Attributes",
+    "Blocks",
+    "Pages"
+  ],
+  "license": [
+    "GPL-3.0+"
+  ],
+  "require": {
+    "php": ">=7.1.0"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Team23\\SetupModule\\": ""
+    }
+  }
+}
