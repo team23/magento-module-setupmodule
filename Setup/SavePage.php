@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Team23\SetupModule\Setup;
 
 use Magento\Cms\Model\PageFactory;
@@ -37,8 +36,14 @@ class SavePage
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
     public function savePage(
-        $identifier, $content, $title = '', $contentHeading = '', $stores = [0], $isActive = 1,
-        $pageLayout = '1column', $layoutUpdateXml = ''
+        $identifier,
+        $content,
+        $title = '',
+        $contentHeading = '',
+        $stores = [0],
+        $isActive = 1,
+        $pageLayout = '1column',
+        $layoutUpdateXml = ''
     ) {
         try {
             $page = $this->pageRepository->getById($identifier);

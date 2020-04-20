@@ -2,9 +2,9 @@
 
 namespace Team23\SetupModule\Setup;
 
-use Magento\Framework\Setup\UpgradeDataInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\UpgradeDataInterface;
 
 /**
  * Class UpgradeData

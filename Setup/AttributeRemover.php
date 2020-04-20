@@ -63,5 +63,4 @@ class AttributeRemover
     {
         $eavSetup->removeAttribute(\Magento\Catalog\Model\Product::ENTITY, $attribute);
     }
-
 }

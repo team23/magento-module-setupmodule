@@ -3,8 +3,8 @@
 namespace Team23\SetupModule\Setup;
 
 use Magento\Framework\Setup\InstallDataInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Snowdog\Menu\Model\Menu\NodeFactory;
 use Snowdog\Menu\Model\MenuFactory;
 
