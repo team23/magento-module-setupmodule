@@ -1,9 +1,9 @@
 {
-  "name": "team23/setup-module",
-  "description": "Setup Module for Magento 2 by Team23",
+  "name": "team23/module-setupmodule",
+  "description": "Setup Module for Magento 2 by TEAM23",
   "homepage": "https://www.team23.de/",
   "type": "magento2-module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "authors": [
     {
       "name": "Alexander Hälbich",
@@ -24,7 +24,7 @@
     "GPL-3.0+"
   ],
   "require": {
-    "php": ">=7.1.0"
+    "php": "~7.2"
   },
   "minimum-stability": "dev",
   "autoload": {
