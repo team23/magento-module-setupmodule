@@ -8,28 +8,35 @@ namespace Team23\SetupModule\Setup;
  */
 class RunUpgrade
 {
+    /** @var BlockCreator */
+    protected $blockCreator;
 
-    /** @var SaveBlock $saveBlock */
-    private $saveBlock;
-
-    /** @var SavePage $savePage */
-    private $savePage;
+    /** @var PageCreator */
+    protected $pageCreator;
 
     /** @var AttributeCreator */
     protected $attributeCreator;
 
+    /** @var AttributeGroupCreator */
+    protected $attributeGroupCreator;
+
     /**
      * RunUpgrade constructor.
-     * @param SaveBlock $saveBlock
-     * @param SavePage $savePage
+     * @param BlockCreator $blockCreator
+     * @param PageCreator $pageCreator
      * @param AttributeCreator $attributeCreator
+     * @param AttributeGroupCreator $attributeGroupCreator
      */
-    public function __construct(SaveBlock $saveBlock, SavePage $savePage, AttributeCreator $attributeCreator, AttributeRemover $attributeRemover)
-    {
-        $this->saveBlock = $saveBlock;
-        $this->savePage = $savePage;
+    public function __construct(
+        BlockCreator $blockCreator,
+        PageCreator $pageCreator,
+        AttributeCreator $attributeCreator,
+        AttributeGroupCreator $attributeGroupCreator
+    ) {
+        $this->blockCreator = $blockCreator;
+        $this->pageCreator = $pageCreator;
         $this->attributeCreator = $attributeCreator;
-        $this->attributeRemover = $attributeRemover;
+        $this->attributeGroupCreator = $attributeGroupCreator;
     }
 
     /**
@@ -126,44 +133,81 @@ class RunUpgrade
     }
 
     /**
-     * Runs Upgrade by version
-     * Takes all xml files with current version and saves to new block
+     * Runs upgrade by version
+     * Gets all xml files with current version
+     *
      * @param $version
      * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function runUpgrade($version)
+    public function run($version)
     {
-
-        // BLOCKS
-        $blocks = glob(dirname(__DIR__) . '/resources/cms_blocks/*_' . $version . '.xml');
+        /**
+         * Creates or saves block
+         */
+        $blocks = glob(dirname(__DIR__) . '/resources/blocks/*_' . $version . '.xml');
         foreach ($blocks as $block) {
             $blockContent = file_get_contents($block);
             $xml = new \SimpleXMLElement($blockContent);
 
-            $this->saveBlock->saveBlock(
+            $this->blockCreator->save(
                 (string)$xml->identifier,
-                (string)$xml->content,
                 (string)$xml->title,
+                (string)$xml->content,
                 [(string)$xml->store],
                 (int)$xml->isActive
             );
         }
 
-        // PAGES
+        /**
+         * Creates or saves pages
+         */
         $pages = glob(dirname(__DIR__) . '/resources/pages/*_' . $version . '.xml');
         foreach ($pages as $page) {
             $pageContent = file_get_contents($page);
             $xml = new \SimpleXMLElement($pageContent);
 
-            $this->savePage->savePage(
+            $this->pageCreator->save(
                 (string)$xml->identifier,
-                (string)$xml->content,
                 (string)$xml->title,
+                (string)$xml->content,
                 (string)$xml->contentHeading,
                 [(string)$xml->store],
                 (int)$xml->isActive,
                 (string)$xml->pageLayout
             );
+        }
+
+        /**
+         * Creates or saves menus
+         */
+        $menus = glob(dirname(__DIR__) . '/resources/menus/*_' . $version . '.xml');
+
+        foreach ($menus as $menu) {
+            $menuContent = file_get_contents($menu);
+            $xml = new \SimpleXMLElement($menuContent);
+
+            $arr = $this->xmlToArray($xml, ['alwaysArray' => ['node']]);
+            $arr = $arr['xml'];
+
+            $this->menuCreator->save(
+                $arr['title'],
+                $arr['identifier'],
+                $arr['cssClass'],
+                [$arr['store']],
+                $arr['node']
+            );
+        }
+
+        /**
+         * Creates product attribute groups
+         */
+        $attributeGroups = glob(dirname(__DIR__) . '/resources/attribute_group/*_' . $version . '.xml');
+        foreach ($attributeGroups as $attributeGroup) {
+            $attributeGroupContent = file_get_contents($attributeGroup);
+            $xml = new \SimpleXMLElement($attributeGroupContent);
+            $xmlArray = $this->xmlToArray($xml, ['alwaysArray' => ['option']])['xml'];
+            $this->attributeGroupCreator->save($xmlArray);
         }
 
         /**
@@ -173,21 +217,8 @@ class RunUpgrade
         foreach ($attributes as $attribute) {
             $attributeContent = file_get_contents($attribute);
             $xml = new \SimpleXMLElement($attributeContent);
-
             $xmlArray = $this->xmlToArray($xml, ['alwaysArray' => ['option']])['xml'];
-
             $this->attributeCreator->save($xmlArray);
-        }
-    }
-
-    /**
-     * @param null $records (string or array)
-     * Remove Attributes
-     */
-    public function removeAttributes($records = null)
-    {
-        if ($records) {
-            $this->attributeRemover->remove($records);
         }
     }
 }
