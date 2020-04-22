@@ -181,13 +181,11 @@ class SetupResourceReader
      */
     protected function resolveResourcePath(string $pathBase = 'module'): string
     {
-        if ($pathBase === 'module') {
-            $path = $this->getAbsoluteModulePath();
+        if ($pathBase === 'module' && ($path = $this->getAbsoluteModulePath())) {
             return $path . '/' . \Magento\Framework\Module\Dir::MODULE_VIEW_DIR . '/' . self::RESOURCE_PATH;
         }
 
-        if ($pathBase === 'theme') {
-            $path = $this->getAbsoluteThemePath();
+        if ($pathBase === 'theme' && ($path = $this->getAbsoluteThemePath())) {
             return $path . '/' . $this->config->getFullyQualifiedModuleName() . '/' . self::RESOURCE_PATH;
         }
 
