@@ -52,6 +52,11 @@ class AttributeGroupCreator implements CreatorInterface
          */
         $eavSetup = $this->eavSetupFactory->create();
         $attributeSetId = $eavSetup->getAttributeSetId(\Magento\Catalog\Model\Product::ENTITY, 'default');
-        $eavSetup->addAttributeGroup(\Magento\Catalog\Model\Product::ENTITY, $attributeSetId, $data['name']);
+        $eavSetup->addAttributeGroup(
+            \Magento\Catalog\Model\Product::ENTITY,
+            $attributeSetId,
+            $data['name'],
+            $data['sort_order'] ?? null
+        );
     }
 }
