@@ -64,7 +64,7 @@ class PageCreator implements CreatorInterface
         $content = $data['content'] ?? '';
         $contentHeading = $data['content_heading'] ?? '';
         $pageLayout = $data['page_layout'] ?? '1column';
-        $storeId = (int)($data['content'] ?? 0);
+        $storeId = (int)($data['store_id'] ?? 0);
         $isActive = (int)($data['is_active'] ?? 0);
 
         try {

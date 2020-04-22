@@ -63,11 +63,11 @@ class BlockCreator implements CreatorInterface
         $identifier = $data['identifier'];
         $title = $data['title'];
         $content = $data['content'] ?? '';
-        $storeId = (int)($data['content'] ?? 0);
+        $storeId = (int)($data['store_id'] ?? 0);
         $isActive = (int)($data['is_active'] ?? 0);
 
         try {
-            $block = $this->blockRepository->getById($data['identifier']);
+            $block = $this->blockRepository->getById($identifier);
             $block
                 ->setTitle($title)
                 ->setContent($content)
