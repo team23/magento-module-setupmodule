@@ -13,10 +13,6 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 class Recurring implements \Magento\Framework\Setup\InstallSchemaInterface
 {
     /**
-     * @var \Team23\SetupModule\Model\Config
-     */
-    protected $config;
-    /**
      * @var \Team23\SetupModule\Model\SetupResourceCreator
      */
     protected $resourceCreator;
@@ -24,14 +20,11 @@ class Recurring implements \Magento\Framework\Setup\InstallSchemaInterface
     /**
      * Recurring constructor.
      *
-     * @param \Team23\SetupModule\Model\Config $config
      * @param \Team23\SetupModule\Model\SetupResourceCreator $resourceCreator
      */
     public function __construct(
-        \Team23\SetupModule\Model\Config $config,
         \Team23\SetupModule\Model\SetupResourceCreator $resourceCreator
     ) {
-        $this->config = $config;
         $this->resourceCreator = $resourceCreator;
     }
 
