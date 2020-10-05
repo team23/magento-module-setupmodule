@@ -1,0 +1,10 @@
+stages:
+  - deploy
+
+deploy:release:
+  stage: deploy
+  trigger:
+    project: team23/satis
+  only:
+    refs:
+      - /^v[0-9]+(?:.[0-9]+)+$/
