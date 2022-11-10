@@ -2,6 +2,10 @@
 
 namespace Team23\SetupModule\Model\SetupResourceCreation;
 
+use Magento\Eav\Setup\EavSetup;
+use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\Exception\LocalizedException;
+
 /**
  * Class AttributeGroupCreator
  *
@@ -10,16 +14,16 @@ namespace Team23\SetupModule\Model\SetupResourceCreation;
 class AttributeGroupCreator implements CreatorInterface
 {
     /**
-     * @var \Magento\Eav\Setup\EavSetupFactory
+     * @var EavSetupFactory
      */
-    protected $eavSetupFactory;
+    protected EavSetupFactory $eavSetupFactory;
 
     /**
      * AttributeGroupCreator constructor.
      *
-     * @param \Magento\Eav\Setup\EavSetupFactory $eavSetupFactory
+     * @param EavSetupFactory $eavSetupFactory
      */
-    public function __construct(\Magento\Eav\Setup\EavSetupFactory $eavSetupFactory)
+    public function __construct(EavSetupFactory $eavSetupFactory)
     {
         $this->eavSetupFactory = $eavSetupFactory;
     }
@@ -28,12 +32,13 @@ class AttributeGroupCreator implements CreatorInterface
      * @inheritDoc
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return void
+     * @throws LocalizedException
      */
     public function validate(array $data): void
     {
         if (!isset($data['name'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(__("The xml tag 'name' may not be empty"));
+            throw new LocalizedException(__("The xml tag 'name' may not be empty"));
         }
     }
 
@@ -41,14 +46,15 @@ class AttributeGroupCreator implements CreatorInterface
      * @inheritDoc
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return void
+     * @throws LocalizedException
      */
     public function save(array $data): void
     {
         $this->validate($data);
 
         /**
-         * @var \Magento\Eav\Setup\EavSetup $eavSetup
+         * @var EavSetup $eavSetup
          */
         $eavSetup = $this->eavSetupFactory->create();
         $attributeSetId = $eavSetup->getAttributeSetId(\Magento\Catalog\Model\Product::ENTITY, 'default');

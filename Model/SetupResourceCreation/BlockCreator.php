@@ -2,6 +2,11 @@
 
 namespace Team23\SetupModule\Model\SetupResourceCreation;
 
+use Magento\Cms\Model\BlockFactory;
+use Magento\Cms\Model\BlockRepository;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\LocalizedException;
+
 /**
  * Class BlockCreator
  *
@@ -10,23 +15,23 @@ namespace Team23\SetupModule\Model\SetupResourceCreation;
 class BlockCreator implements CreatorInterface
 {
     /**
-     * @var \Magento\Cms\Model\BlockFactory
+     * @var BlockFactory
      */
-    protected $blockFactory;
+    protected BlockFactory $blockFactory;
     /**
-     * @var \Magento\Cms\Model\BlockRepository
+     * @var BlockRepository
      */
-    protected $blockRepository;
+    protected BlockRepository $blockRepository;
 
     /**
      * BlockCreator constructor.
      *
-     * @param \Magento\Cms\Model\BlockFactory $blockFactory
-     * @param \Magento\Cms\Model\BlockRepository $blockRepository
+     * @param BlockFactory $blockFactory
+     * @param BlockRepository $blockRepository
      */
     public function __construct(
-        \Magento\Cms\Model\BlockFactory $blockFactory,
-        \Magento\Cms\Model\BlockRepository $blockRepository
+        BlockFactory $blockFactory,
+        BlockRepository $blockRepository
     ) {
         $this->blockFactory = $blockFactory;
         $this->blockRepository = $blockRepository;
@@ -36,16 +41,17 @@ class BlockCreator implements CreatorInterface
      * @inheritDoc
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return void
+     * @throws LocalizedException
      */
     public function validate(array $data): void
     {
         if (!isset($data['identifier'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(__("The xml tag 'identifier' may not be empty"));
+            throw new LocalizedException(__("The xml tag 'identifier' may not be empty"));
         }
 
         if (!isset($data['title'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(__("The xml tag 'title' may not be empty"));
+            throw new LocalizedException(__("The xml tag 'title' may not be empty"));
         }
     }
 
@@ -53,8 +59,9 @@ class BlockCreator implements CreatorInterface
      * @inheritDoc
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return void
+     * @throws CouldNotSaveException
+     * @throws LocalizedException
      */
     public function save(array $data): void
     {

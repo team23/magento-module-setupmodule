@@ -2,6 +2,9 @@
 
 namespace Team23\SetupModule\Model\SetupResourceCreation;
 
+use Magento\Eav\Setup\EavSetup;
+use Magento\Eav\Setup\EavSetupFactory;
+
 /**
  * Class AttributeRemover
  *
@@ -10,15 +13,15 @@ namespace Team23\SetupModule\Model\SetupResourceCreation;
 class AttributeRemover
 {
     /**
-     * @var \Magento\Eav\Setup\EavSetupFactory
+     * @var EavSetupFactory
      */
     protected $eavSetupFactory;
     /**
      * AttributeRemover constructor.
      *
-     * @param \Magento\Eav\Setup\EavSetupFactory $eavSetupFactory
+     * @param EavSetupFactory $eavSetupFactory
      */
-    public function __construct(\Magento\Eav\Setup\EavSetupFactory $eavSetupFactory)
+    public function __construct(EavSetupFactory $eavSetupFactory)
     {
         $this->eavSetupFactory = $eavSetupFactory;
     }
@@ -27,11 +30,12 @@ class AttributeRemover
      * Remove one or many product EAV attributes
      *
      * @param array|string $attributes
+     * @return void
      */
-    public function remove($attributes)
+    public function remove(array|string $attributes): void
     {
         /**
-         * @var \Magento\Eav\Setup\EavSetup $eavSetup
+         * @var EavSetup $eavSetup
          */
         $eavSetup = $this->eavSetupFactory->create();
 
@@ -50,10 +54,11 @@ class AttributeRemover
      * Check if a product EAV attribute exists
      *
      * @paran \Magento\Eav\Setup\EavSetup $eavSetup
+     * @param $eavSetup
      * @param string $attribute
      * @return bool
      */
-    private function isExist($eavSetup, $attribute)
+    private function isExist($eavSetup, string $attribute): bool
     {
         if ($eavSetup->getAttributeId(\Magento\Catalog\Model\Product::ENTITY, $attribute) > 1) {
             return true;
@@ -66,9 +71,11 @@ class AttributeRemover
      * Remove the product EAV attribute
      *
      * @paran \Magento\Eav\Setup\EavSetup $eavSetup
+     * @param $eavSetup
      * @param string $attribute
+     * @return void
      */
-    private function removeAttribute($eavSetup, $attribute)
+    private function removeAttribute($eavSetup, string $attribute): void
     {
         $eavSetup->removeAttribute(\Magento\Catalog\Model\Product::ENTITY, $attribute);
     }

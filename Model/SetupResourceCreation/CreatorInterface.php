@@ -13,13 +13,15 @@ interface CreatorInterface
      * Validate necessary data for saving and throw Exceptions if validation fails
      *
      * @param array $data
+     * @return void
      */
-    function validate(array $data): void;
+    public function validate(array $data): void;
 
     /**
      * Save the resource with provided data
      *
      * @param array $data
+     * @return void
      */
-    function save(array $data): void;
+    public function save(array $data): void;
 }

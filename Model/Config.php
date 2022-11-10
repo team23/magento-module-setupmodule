@@ -17,7 +17,7 @@ class Config
      *
      * @return string
      */
-    public function getFullyQualifiedModuleName()
+    public function getFullyQualifiedModuleName(): string
     {
         return self::MODULE_VENDOR . '_' . self::MODULE_NAME;
     }

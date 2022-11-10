@@ -2,6 +2,16 @@
 
 namespace Team23\SetupModule\Model;
 
+use Exception;
+use Magento\Framework\Component\ComponentRegistrar;
+use Magento\Framework\Exception\ValidatorException;
+use Magento\Framework\Filesystem\Directory\Read;
+use Magento\Framework\Filesystem\Directory\ReadFactory;
+use Magento\Framework\View\Design\ThemeInterface;
+use Magento\Framework\View\DesignInterface;
+use Magento\Framework\Xml\Parser;
+use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory;
+
 /**
  * Class ResourceReader
  *
@@ -11,47 +21,47 @@ class SetupResourceReader
 {
     const RESOURCE_PATH = 'resources';
     /**
-     * @var \Magento\Framework\Xml\Parser
+     * @var Parser
      */
-    protected $xmlParser;
+    protected Parser $xmlParser;
     /**
-     * @var \Magento\Theme\Model\ResourceModel\Theme\CollectionFactory
+     * @var CollectionFactory
      */
-    protected $themeFactory;
+    protected CollectionFactory $themeFactory;
     /**
-     * @var \Magento\Framework\View\DesignInterface
+     * @var DesignInterface
      */
-    protected $design;
+    protected DesignInterface $design;
     /**
-     * @var \Magento\Framework\Component\ComponentRegistrar
+     * @var ComponentRegistrar
      */
-    protected $componentRegistrar;
+    protected ComponentRegistrar $componentRegistrar;
     /**
      * @var Config
      */
-    protected $config;
+    protected Config $config;
     /**
-     * @var \Magento\Framework\Filesystem\Directory\ReadFactory
+     * @var ReadFactory
      */
-    protected $readDirFactory;
+    protected ReadFactory $readDirFactory;
 
     /**
      * ResourceReader constructor.
      *
-     * @param \Magento\Framework\Xml\Parser $xmlParser
-     * @param \Magento\Theme\Model\ResourceModel\Theme\CollectionFactory $themeFactory
-     * @param \Magento\Framework\View\DesignInterface $design
-     * @param \Magento\Framework\Component\ComponentRegistrar $componentRegistrar
+     * @param Parser $xmlParser
+     * @param CollectionFactory $themeFactory
+     * @param DesignInterface $design
+     * @param ComponentRegistrar $componentRegistrar
      * @param Config $config
-     * @param \Magento\Framework\Filesystem\Directory\ReadFactory $readDirFactory
+     * @param ReadFactory $readDirFactory
      */
     public function __construct(
-        \Magento\Framework\Xml\Parser $xmlParser,
-        \Magento\Theme\Model\ResourceModel\Theme\CollectionFactory $themeFactory,
-        \Magento\Framework\View\DesignInterface $design,
-        \Magento\Framework\Component\ComponentRegistrar $componentRegistrar,
-        \Team23\SetupModule\Model\Config $config,
-        \Magento\Framework\Filesystem\Directory\ReadFactory $readDirFactory
+        Parser             $xmlParser,
+        CollectionFactory  $themeFactory,
+        DesignInterface    $design,
+        ComponentRegistrar $componentRegistrar,
+        Config             $config,
+        ReadFactory        $readDirFactory
     ) {
         $this->xmlParser = $xmlParser;
         $this->themeFactory = $themeFactory;
@@ -64,12 +74,12 @@ class SetupResourceReader
     /**
      * Extract the version from a string or "" if not found or valid
      *
-     * The version number must be follow this schema: "{number > 0}.{number}.{number}"
+     * The version number must follow this schema: "{number > 0}.{number}.{number}"
      *
      * @param string $file
      * @return string
      */
-    protected function extractVersion(string $file)
+    protected function extractVersion(string $file): string
     {
         $file = pathinfo($file, PATHINFO_FILENAME);
         preg_match('/[1-9]+[0-9]*\.[0-9]+\.[0-9]+$/', $file, $version);
@@ -82,12 +92,12 @@ class SetupResourceReader
      *
      * @return string|null
      */
-    protected function getAbsoluteModulePath()
+    protected function getAbsoluteModulePath(): ?string
     {
         return $this->componentRegistrar->getPath(
-                \Magento\Framework\Component\ComponentRegistrar::MODULE,
-                $this->config->getFullyQualifiedModuleName()
-            ) ?? '';
+            ComponentRegistrar::MODULE,
+            $this->config->getFullyQualifiedModuleName()
+        ) ?? '';
     }
 
     /**
@@ -95,14 +105,14 @@ class SetupResourceReader
      *
      * @return string
      */
-    protected function getAbsoluteThemePath()
+    protected function getAbsoluteThemePath(): string
     {
         $themePath = $this->getTheme()->getFullPath();
 
         return $this->componentRegistrar->getPath(
-                \Magento\Framework\Component\ComponentRegistrar::THEME,
-                $themePath
-            ) ?? '';
+            ComponentRegistrar::THEME,
+            $themePath
+        ) ?? '';
     }
 
     /**
@@ -113,7 +123,7 @@ class SetupResourceReader
      *
      * @param string $resourceType
      * @return array ['path' => string, 'files' => array]
-     * @throws \Magento\Framework\Exception\ValidatorException
+     * @throws ValidatorException
      */
     protected function getFilteredResourceFiles(string $resourceType): array
     {
@@ -132,9 +142,9 @@ class SetupResourceReader
      * @param string $resourceType
      * @param string $setupVersion
      * @return array
-     * @throws \Magento\Framework\Exception\ValidatorException
+     * @throws ValidatorException
      */
-    public function getResourceData(string $resourceType, string $setupVersion)
+    public function getResourceData(string $resourceType, string $setupVersion): array
     {
         $locations = $this->getFilteredResourceFiles($resourceType);
         $result = [];
@@ -164,8 +174,8 @@ class SetupResourceReader
     /**
      *  Check if a given version is lower than the setupVersion
      *
-     * @param $version
-     * @param $setupVersion
+     * @param string $version
+     * @param string $setupVersion
      * @return bool
      */
     protected function shouldBeUpdated(string $version, string $setupVersion): bool
@@ -200,17 +210,17 @@ class SetupResourceReader
      * @param string $resourcePath
      * @param string $type
      * @return array ['path' => string, 'files' => array]
-     * @throws \Magento\Framework\Exception\ValidatorException
-     * @throws \Exception
+     * @throws ValidatorException
+     * @throws Exception
      */
     protected function getResourceFiles(string $resourcePath, string $type): array
     {
         if (empty($type)) {
-            throw new \Exception("Invalid resource type given: must be a valid folder in resources/");
+            throw new Exception("Invalid resource type given: must be a valid folder in resources/");
         }
 
         /**
-         * @var \Magento\Framework\Filesystem\Directory\Read $pathDir
+         * @var Read $pathDir
          */
         $pathDir = $this->readDirFactory->create($resourcePath);
         $files = $pathDir->search('*_*.xml', $type);
@@ -225,9 +235,9 @@ class SetupResourceReader
     /**
      * Get the current active frontend theme object
      *
-     * @return \Magento\Framework\View\Design\ThemeInterface
+     * @return ThemeInterface
      */
-    protected function getTheme()
+    protected function getTheme(): ThemeInterface
     {
         $themeCollection = $this->themeFactory->create();
         $area = \Magento\Framework\App\Area::AREA_FRONTEND;
@@ -235,7 +245,7 @@ class SetupResourceReader
         if (is_numeric($themeIdentifier)) {
             $theme = $themeCollection->getItemById($themeIdentifier);
         } else {
-            $themeFullPath = $area . \Magento\Framework\View\Design\ThemeInterface::PATH_SEPARATOR . $themeIdentifier;
+            $themeFullPath = $area . ThemeInterface::PATH_SEPARATOR . $themeIdentifier;
             $theme = $themeCollection->getThemeByFullPath($themeFullPath);
         }
 
