@@ -2,6 +2,17 @@
 
 namespace Team23\SetupModule\Model;
 
+use Exception;
+use Magento\Config\Model\Config;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\ValidatorException;
+use Team23\SetupModule\Model\SetupResourceCreation\AttributeGroupCreator;
+use Team23\SetupModule\Model\SetupResourceCreation\AttributeCreator;
+use Team23\SetupModule\Model\SetupResourceCreation\BlockCreator;
+use Team23\SetupModule\Model\SetupResourceCreation\CreatorInterface;
+use Team23\SetupModule\Model\SetupResourceCreation\PageCreator;
+use Zend_Validate_Exception;
+
 /**
  * Class AttributeCreator
  *
@@ -12,47 +23,52 @@ class SetupResourceCreator
     const SETUP_VERSION_PATH = 'team23/setup_module/version';
 
     /**
-     * @var \Magento\Config\Model\Config
+     * @var Config
      */
-    protected $config;
+    protected Config $config;
+    
     /**
      * @var SetupResourceReader
      */
-    protected $resourceReader;
+    protected SetupResourceReader $resourceReader;
+    
     /**
-     * @var SetupResourceCreation\AttributeGroupCreator
+     * @var AttributeGroupCreator
      */
-    protected $attributeGroupCreator;
+    protected AttributeGroupCreator $attributeGroupCreator;
+    
     /**
-     * @var SetupResourceCreation\AttributeCreator
+     * @var AttributeCreator
      */
-    protected $attributeCreator;
+    protected AttributeCreator $attributeCreator;
+    
     /**
-     * @var SetupResourceCreation\BlockCreator
+     * @var BlockCreator
      */
-    protected $blockCreator;
+    protected BlockCreator $blockCreator;
+    
     /**
-     * @var SetupResourceCreation\PageCreator
+     * @var PageCreator
      */
-    protected $pageCreator;
+    protected PageCreator $pageCreator;
 
     /**
      * SetupResourceCreator constructor.
      *
-     * @param \Magento\Config\Model\Config $config
+     * @param Config $config
      * @param SetupResourceReader $resourceReader
-     * @param SetupResourceCreation\AttributeGroupCreator $attributeGroupCreator
-     * @param SetupResourceCreation\AttributeCreator $attributeCreator
-     * @param SetupResourceCreation\BlockCreator $blockCreator
-     * @param SetupResourceCreation\PageCreator $pageCreator
+     * @param AttributeGroupCreator $attributeGroupCreator
+     * @param AttributeCreator $attributeCreator
+     * @param BlockCreator $blockCreator
+     * @param PageCreator $pageCreator
      */
     public function __construct(
-        \Magento\Config\Model\Config $config,
-        \Team23\SetupModule\Model\SetupResourceReader $resourceReader,
-        \Team23\SetupModule\Model\SetupResourceCreation\AttributeGroupCreator $attributeGroupCreator,
-        \Team23\SetupModule\Model\SetupResourceCreation\AttributeCreator $attributeCreator,
-        \Team23\SetupModule\Model\SetupResourceCreation\BlockCreator $blockCreator,
-        \Team23\SetupModule\Model\SetupResourceCreation\PageCreator $pageCreator
+        Config                  $config,
+        SetupResourceReader     $resourceReader,
+        AttributeGroupCreator   $attributeGroupCreator,
+        AttributeCreator        $attributeCreator,
+        BlockCreator            $blockCreator,
+        PageCreator             $pageCreator
     ) {
         $this->config = $config;
         $this->resourceReader = $resourceReader;
@@ -65,17 +81,19 @@ class SetupResourceCreator
     /**
      * Run the resource creation process
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\ValidatorException
-     * @throws \Zend_Validate_Exception
+     * @return void
+     * @throws ValidatorException
+     * @throws Exception
+     * @throws Zend_Validate_Exception
+     * @throws LocalizedException
      */
-    public function run()
+    public function run(): void
     {
         $currentVersion = $this->getSetupVersion();
         $maxVersion = $currentVersion;
 
         $resourcesData = $this->getData($currentVersion);
-        if($resourcesData){
+        if ($resourcesData) {
             echo "\nRunning \e[32mTeam23_SetupModule\e[0m (setup version: {$currentVersion}):";
         }
 
@@ -97,7 +115,7 @@ class SetupResourceCreator
      *
      * @param string $setupVersion
      * @return array
-     * @throws \Magento\Framework\Exception\ValidatorException
+     * @throws ValidatorException
      */
     protected function getData(string $setupVersion): array
     {
@@ -133,14 +151,15 @@ class SetupResourceCreator
     /**
      * @param $type
      * @param $data
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Zend_Validate_Exception
+     * @return void
+     * @throws LocalizedException
+     * @throws Zend_Validate_Exception
      */
-    protected function createResource($type, $data)
+    protected function createResource($type, $data): void
     {
         $type = $this->snakeToCamelCase($type);
         /**
-         * @var \Team23\SetupModule\Model\SetupResourceCreation\CreatorInterface $creator
+         * @var CreatorInterface $creator
          */
         if ($creator = $this->{$type . 'Creator'}) {
             $creatorClass = get_class($creator);
@@ -152,7 +171,7 @@ class SetupResourceCreator
                         echo "\n  creating {$type} from {$file['path']}...";
                         $creator->save($file['content']['xml']);
                         echo "\e[32m done!\e[0m";
-                    } catch (\Magento\Framework\Exception\LocalizedException | \Zend_Validate_Exception $e) {
+                    } catch (LocalizedException | Zend_Validate_Exception $e) {
                         // just add more information and throw again
                         $name = get_class($e);
                         echo "\n\e[31mException '{$name}' caused by {$file['path']}: \e[0m\n";
@@ -179,9 +198,10 @@ class SetupResourceCreator
      * Set the new setup version
      *
      * @param string $version
-     * @throws \Exception
+     * @return void
+     * @throws Exception
      */
-    public function setSetupVersion(string $version)
+    public function setSetupVersion(string $version): void
     {
         $this->config->setDataByPath(self::SETUP_VERSION_PATH, $version);
         $this->config->save();

@@ -2,6 +2,11 @@
 
 namespace Team23\SetupModule\Model\SetupResourceCreation;
 
+use Magento\Cms\Model\PageFactory;
+use Magento\Cms\Model\PageRepository;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\LocalizedException;
+
 /**
  * Class BlockCreator
  *
@@ -10,22 +15,22 @@ namespace Team23\SetupModule\Model\SetupResourceCreation;
 class PageCreator implements CreatorInterface
 {
     /**
-     * @var \Magento\Cms\Model\PageFactory
+     * @var PageFactory
      */
-    protected $pageFactory;
+    protected PageFactory $pageFactory;
 
-    /** @var \Magento\Cms\Model\PageRepository */
-    protected $pageRepository;
+    /** @var PageRepository */
+    protected PageRepository $pageRepository;
 
     /**
      * BlockCreator constructor.
      *
-     * @param \Magento\Cms\Model\PageFactory $pageFactory
-     * @param \Magento\Cms\Model\PageRepository $pageRepository
+     * @param PageFactory $pageFactory
+     * @param PageRepository $pageRepository
      */
     public function __construct(
-        \Magento\Cms\Model\PageFactory $pageFactory,
-        \Magento\Cms\Model\PageRepository $pageRepository
+        PageFactory $pageFactory,
+        PageRepository $pageRepository
     ) {
         $this->pageFactory = $pageFactory;
         $this->pageRepository = $pageRepository;
@@ -35,16 +40,17 @@ class PageCreator implements CreatorInterface
      * @inheritDoc
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return void
+     * @throws LocalizedException
      */
     public function validate(array $data): void
     {
         if (!isset($data['identifier'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(__("The xml tag 'identifier' may not be empty"));
+            throw new LocalizedException(__("The xml tag 'identifier' may not be empty"));
         }
 
         if (!isset($data['title'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(__("The xml tag 'title' may not be empty"));
+            throw new LocalizedException(__("The xml tag 'title' may not be empty"));
         }
     }
 
@@ -52,8 +58,9 @@ class PageCreator implements CreatorInterface
      * Save function
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return void
+     * @throws CouldNotSaveException
+     * @throws LocalizedException
      */
     public function save(array $data): void
     {

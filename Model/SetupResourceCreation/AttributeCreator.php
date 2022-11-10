@@ -2,6 +2,11 @@
 
 namespace Team23\SetupModule\Model\SetupResourceCreation;
 
+use Magento\Eav\Setup\EavSetup;
+use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Zend_Validate_Exception;
+
 /**
  * Class AttributeCreator
  *
@@ -10,16 +15,16 @@ namespace Team23\SetupModule\Model\SetupResourceCreation;
 class AttributeCreator implements CreatorInterface
 {
     /**
-     * @var \Magento\Eav\Setup\EavSetupFactory
+     * @var EavSetupFactory
      */
-    protected $eavSetupFactory;
+    protected EavSetupFactory $eavSetupFactory;
 
     /**
      * AttributeCreator constructor.
      *
-     * @param \Magento\Eav\Setup\EavSetupFactory $eavSetupFactory
+     * @param EavSetupFactory $eavSetupFactory
      */
-    public function __construct(\Magento\Eav\Setup\EavSetupFactory $eavSetupFactory)
+    public function __construct(EavSetupFactory $eavSetupFactory)
     {
         $this->eavSetupFactory = $eavSetupFactory;
     }
@@ -28,22 +33,23 @@ class AttributeCreator implements CreatorInterface
      * @inheritDoc
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return void
+     * @throws LocalizedException
      */
     public function validate(array $data): void
     {
         if (!isset($data['code'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(__("The xml tag 'code' may not be empty"));
+            throw new LocalizedException(__("The xml tag 'code' may not be empty"));
         }
 
         if (isset($data['source']) && !class_exists($data['source'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 __("The xml tag 'source' refers to a class that does not exist")
             );
         }
 
         if (isset($data['backend']) && !class_exists($data['backend'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 __("The xml tag 'backend' refers to a class that does not exist")
             );
         }
@@ -53,15 +59,16 @@ class AttributeCreator implements CreatorInterface
      * @inheritDoc
      *
      * @param array $data
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Zend_Validate_Exception
+     * @return void
+     * @throws LocalizedException
+     * @throws Zend_Validate_Exception
      */
     public function save(array $data): void
     {
         $this->validate($data);
 
         /**
-         * @var \Magento\Eav\Setup\EavSetup $eavSetup
+         * @var EavSetup $eavSetup
          */
         $eavSetup = $this->eavSetupFactory->create();
         $eavSetup->addAttribute(

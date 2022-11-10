@@ -2,28 +2,30 @@
 
 namespace Team23\SetupModule\Setup;
 
+use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
+use Team23\SetupModule\Model\SetupResourceCreator;
 
 /**
  * Class Recurring
  *
  * @package Team23\SetupModule\Setup
  */
-class Recurring implements \Magento\Framework\Setup\InstallSchemaInterface
+class Recurring implements InstallSchemaInterface
 {
     /**
-     * @var \Team23\SetupModule\Model\SetupResourceCreator
+     * @var SetupResourceCreator
      */
-    protected $resourceCreator;
+    protected SetupResourceCreator $resourceCreator;
 
     /**
      * Recurring constructor.
      *
-     * @param \Team23\SetupModule\Model\SetupResourceCreator $resourceCreator
+     * @param SetupResourceCreator $resourceCreator
      */
     public function __construct(
-        \Team23\SetupModule\Model\SetupResourceCreator $resourceCreator
+        SetupResourceCreator $resourceCreator
     ) {
         $this->resourceCreator = $resourceCreator;
     }
